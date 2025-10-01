@@ -4,16 +4,28 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { NewsItem } from "../../src/context/NewsContext";
 
 export default function NewsDetailScreen() {
-  const params = useLocalSearchParams<{ item: string }>();
+  const { newsJson } = useLocalSearchParams<{ newsJson?: string }>();
   const [item, setItem] = useState<NewsItem | null>(null);
 
   useEffect(() => {
-    if (params.item) {
-      setItem(JSON.parse(decodeURIComponent(params.item)));
+    if (newsJson) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(newsJson));
+        setItem(parsed);
+      } catch (err) {
+        console.log("Erro ao decodificar notícia via JSON:", err);
+        setItem(null);
+      }
     }
-  }, [params.item]);
+  }, [newsJson]);
 
-  if (!item) return null;
+  if (!item) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-50">
+        <Text className="text-gray-500">Notícia inválida</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
@@ -25,20 +37,18 @@ export default function NewsDetailScreen() {
           {item.title}
         </Text>
         <Text className="text-gray-500 text-sm mb-4">
-          {item.source.name} • {new Date(item.publishedAt).toLocaleDateString()}
+          {item.source?.name || "Fonte desconhecida"} •{" "}
+          {item.publishedAt
+            ? new Date(item.publishedAt).toLocaleDateString()
+            : "Data indisponível"}
         </Text>
         <Text className="text-gray-700 mb-6">
-          {item.content || item.description}
+          {item.content || item.description || "Conteúdo não disponível"}
         </Text>
-
         <TouchableOpacity
           onPress={() => window.open(item.url, "_blank")}
           className="bg-purple-custom py-3 rounded-xl"
-        >
-          <Text className="text-center text-white font-semibold">
-            Ler notícia completa
-          </Text>
-        </TouchableOpacity>
+        ></TouchableOpacity>
       </View>
     </ScrollView>
   );

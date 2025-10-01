@@ -21,7 +21,7 @@ interface NewsContextProps {
   search: string;
   setSearch: (value: string) => void;
   toggleFavorite: (item: NewsItem) => void;
-  fetchAllNews: () => void;
+  fetchAllNews: (query?: string) => void;
 }
 
 export const NewsContext = createContext<NewsContextProps>(
@@ -40,19 +40,23 @@ export const NewsProvider = ({ children }: { children: ReactNode }) => {
     loadFavorites();
   }, []);
 
-  useEffect(() => {
-    // Atualiza a lista quando o search mudar
-    fetchAllNews();
-  }, [search]);
-
-  const fetchAllNews = async () => {
+  const fetchAllNews = async (query?: string) => {
     setLoading(true);
     try {
-      const data = await fetchNews(search);
-      setNews(data);
+      if (query && query.trim().length > 1) {
+        const data = await fetchNews(query);
+        setNews(data);
+      } else if (!query) {
+        const data = await fetchNews();
+        setNews(data);
+      } else {
+        setNews([]);
+      }
       setError(null);
     } catch (err: any) {
-      setError(err.message || "Erro ao buscar notícias");
+      console.warn("❌ Erro na API:", err.message);
+      setError("Erro ao carregar notícias");
+      setNews([]);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
-import { Ionicons } from "@expo/vector-icons"; // ícones do Expo
+import { colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { TextInput, View } from "react-native";
 
@@ -14,14 +15,19 @@ export const SearchBar = ({
   placeholder,
 }: SearchBarProps) => {
   return (
-    <View className="flex-row items-center bg-white rounded-full px-4 py-2 shadow-md mb-4">
-      <Ionicons name="search" size={20} color="#9CA3AF" className="mr-2" />
+    <View className="flex-row items-center bg-white rounded-full px-3 py-1.5 shadow-md mb-4 w-full max-w-screen-md self-center">
+      <Ionicons
+        name="search"
+        size={20}
+        color="gray"
+        style={{ marginRight: 8 }}
+      />
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder || "Buscar notícias..."}
-        className="flex-1 text-gray-700"
-        placeholderTextColor="#9CA3AF"
+        className="flex-1 text-sm md:text-base text-gray-700"
+        placeholderTextColor={colors.darkGrey}
       />
     </View>
   );

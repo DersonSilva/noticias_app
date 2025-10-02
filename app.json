@@ -4,14 +4,14 @@
     "slug": "noticias_app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/expo-images/icon.png",
+    "icon": "./assets/expo-images/icon-android.png",
     "scheme": "noticiasapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/expo-images/splash-icon.png",
+      "image": "./assets/expo-images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#7A5CFA"
     },
     "ios": {
       "supportsTablet": true
@@ -19,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/expo-images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#7A5CFA"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false

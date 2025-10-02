@@ -1,6 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { fetchNews } from "../api/newsApi";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { fetchNewsApi } from "../api/newsApi";
 
 export interface NewsItem {
   id: string;
@@ -21,7 +27,7 @@ interface NewsContextProps {
   search: string;
   setSearch: (value: string) => void;
   toggleFavorite: (item: NewsItem) => void;
-  fetchAllNews: (query?: string) => void;
+  fetchAllNews: (query?: string, category?: string) => void;
 }
 
 export const NewsContext = createContext<NewsContextProps>(
@@ -40,18 +46,16 @@ export const NewsProvider = ({ children }: { children: ReactNode }) => {
     loadFavorites();
   }, []);
 
-  const fetchAllNews = async (query?: string) => {
+  const fetchAllNews = async (query?: string, category?: string) => {
     setLoading(true);
     try {
-      if (query && query.trim().length > 1) {
-        const data = await fetchNews(query);
-        setNews(data);
-      } else if (!query) {
-        const data = await fetchNews();
-        setNews(data);
-      } else {
-        setNews([]);
+      let finalQuery = query ?? "";
+      if (category && category !== "Todos") {
+        finalQuery += ` ${category}`;
       }
+
+      const data = await fetchNewsApi(finalQuery);
+      setNews(data);
       setError(null);
     } catch (err: any) {
       console.warn("❌ Erro na API:", err.message);
@@ -103,3 +107,5 @@ export const NewsProvider = ({ children }: { children: ReactNode }) => {
     </NewsContext.Provider>
   );
 };
+
+export const useNews = () => useContext(NewsContext);

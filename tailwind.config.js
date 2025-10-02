@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "purple-custom": "#7A5CFA", // <--- aqui a sua cor
+        "purple-custom": "#7A5CFA",
       },
     },
   },

@@ -18,28 +18,34 @@ interface GNewsResponse {
   totalArticles: number;
 }
 
-// 🔴 Controlador para cancelar requisições antigas
 let controller: AbortController | null = null;
 
-export const fetchNews = async (query?: string): Promise<NewsItem[]> => {
+// Recebe query e category
+export const fetchNewsApi = async (
+  query?: string,
+  category?: string
+): Promise<NewsItem[]> => {
   if (!GNEWS_BASE_URL || !GNEWS_API_KEY) {
     throw new Error("API key ou Base URL não configurada");
   }
 
-  // Cancela a requisição anterior antes de criar uma nova
-  if (controller) {
-    controller.abort();
-  }
+  // Cancelar requisição anterior
+  if (controller) controller.abort();
   controller = new AbortController();
   const signal = controller.signal;
 
   try {
-    const isSearch = query && query.trim() !== "";
-    const url = isSearch
-      ? `${GNEWS_BASE_URL}/search?q=${encodeURIComponent(
-          query!
-        )}&token=${GNEWS_API_KEY}&lang=pt&max=20`
-      : `${GNEWS_BASE_URL}/top-headlines?token=${GNEWS_API_KEY}&lang=pt&max=20`;
+    const safeQuery = query?.trim()
+      ? encodeURIComponent(query.trim())
+      : undefined;
+    const categoryQuery =
+      category && category !== "Todos"
+        ? `&topic=${category.toLowerCase()}`
+        : "";
+
+    const url = safeQuery
+      ? `${GNEWS_BASE_URL}/search?q=${safeQuery}${categoryQuery}&token=${GNEWS_API_KEY}&lang=pt&max=20`
+      : `${GNEWS_BASE_URL}/top-headlines?token=${GNEWS_API_KEY}&lang=pt&max=20${categoryQuery}`;
 
     const response = await fetch(url, { signal });
     if (!response.ok) {
@@ -59,9 +65,7 @@ export const fetchNews = async (query?: string): Promise<NewsItem[]> => {
       publishedAt: item.publishedAt,
     }));
   } catch (error: any) {
-    if (error.name === "AbortError") {
-      return [];
-    }
+    if (error.name === "AbortError") return [];
     console.error("Erro ao buscar notícias:", error.message);
     throw new Error(error.message || "Erro ao buscar notícias");
   }

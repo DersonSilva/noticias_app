@@ -8,7 +8,7 @@ interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({ color }) => {
   return (
-    <View className="flex-1 justify-center items-center mt-5">
+    <View className="flex-1 justify-center items-center">
       <ActivityIndicator size="large" color={color || colors.primary} />
     </View>
   );

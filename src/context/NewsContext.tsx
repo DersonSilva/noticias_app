@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
   ReactNode,
@@ -6,7 +5,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { fetchNewsApi } from "../api/newsApi";
+import { useNewsFetch } from "../hooks/useFetchNews";
+import { loadFavorites, saveFavorites } from "../storage/favorites";
 
 export interface NewsItem {
   id: string;
@@ -35,44 +35,18 @@ export const NewsContext = createContext<NewsContextProps>(
 );
 
 export const NewsProvider = ({ children }: { children: ReactNode }) => {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const { news, loading, error, fetchAllNews, setNews } = useNewsFetch();
   const [favorites, setFavorites] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchAllNews();
-    loadFavorites();
+    loadFavoritesFromStorage();
   }, []);
 
-  const fetchAllNews = async (query?: string, category?: string) => {
-    setLoading(true);
-    try {
-      let finalQuery = query ?? "";
-      if (category && category !== "Todos") {
-        finalQuery += ` ${category}`;
-      }
-
-      const data = await fetchNewsApi(finalQuery);
-      setNews(data);
-      setError(null);
-    } catch (err: any) {
-      console.warn("❌ Erro na API:", err.message);
-      setError("Erro ao carregar notícias");
-      setNews([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadFavorites = async () => {
-    try {
-      const stored = await AsyncStorage.getItem("@favorites");
-      if (stored) setFavorites(JSON.parse(stored));
-    } catch (err) {
-      console.log("Erro ao carregar favoritos:", err);
-    }
+  const loadFavoritesFromStorage = async () => {
+    const stored = await loadFavorites();
+    setFavorites(stored);
   };
 
   const toggleFavorite = async (item: NewsItem) => {
@@ -83,11 +57,7 @@ export const NewsProvider = ({ children }: { children: ReactNode }) => {
       updated = [...favorites, item];
     }
     setFavorites(updated);
-    try {
-      await AsyncStorage.setItem("@favorites", JSON.stringify(updated));
-    } catch (err) {
-      console.log("Erro ao salvar favoritos:", err);
-    }
+    await saveFavorites(updated);
   };
 
   return (

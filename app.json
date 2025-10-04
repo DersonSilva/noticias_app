@@ -17,6 +17,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.anderson.noticiasapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/expo-images/adaptive-icon.png",
         "backgroundColor": "#7A5CFA"
@@ -32,6 +33,14 @@
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "GNEWS_API_KEY": "74c53a7ac3e2e772efbc4f3f723d0a2f",
+      "GNEWS_BASE_URL": "https://gnews.io/api/v4",
+      "router": {},
+      "eas": {
+        "projectId": "2d511818-2162-4e8c-8fdd-bfefeb4ca103"
+      }
     }
   }
 }

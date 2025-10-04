@@ -1,10 +1,12 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useCallback } from "react";
+import { View } from "react-native";
 import "../../css/global.css";
 import { NewsProvider } from "../../src/context/NewsContext";
 
+// Chame apenas uma vez, no topo do arquivo
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
@@ -12,21 +14,24 @@ export default function Layout() {
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  useEffect(() => {
+  const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
+  // Retorna null até que as fontes estejam carregadas
   if (!fontsLoaded) return null;
 
   return (
     <NewsProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </View>
     </NewsProvider>
   );
 }
